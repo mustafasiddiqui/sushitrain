@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class SushitrainApplication {
+public class SushiTrainApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(SushitrainApplication.class, args);
+		SpringApplication.run(SushiTrainApplication.class, args);
 	}
 
 }
