@@ -81,8 +81,8 @@ class TrayScannerImplTest {
 
         Date startTime = parseDate("06:45");
         Date endTime = parseDate("09:45");
+        printEventStore(eventStore);
         assertEquals(3, scanner.adjustForMissingScansOut(eventStore, startTime, endTime));
-
         assertEquals(0, scanner.adjustForMissingScansOut(eventStore, startTime, endTime));
 
         insertEntry(eventStore, "13:30", 1, 0);

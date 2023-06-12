@@ -90,7 +90,6 @@ public class TrayScannerImpl implements TrayScanner {
         AtomicInteger scansIn = new AtomicInteger(),
                 scansOut = new AtomicInteger();
 
-
         eventStore.entrySet()
                 .stream()
                 .filter(e -> (e.getKey().compareTo(startTime) <= 0))
@@ -117,7 +116,7 @@ public class TrayScannerImpl implements TrayScanner {
     }
 
     void incrementEventStore(Map<Date, TrayEvent> eventStore, Date key, int scansInIncrement, int scansOutIncrement) {
-        if (eventStore != null && key != null) {
+        if (eventStore != null && key != null && (scansInIncrement > 0 || scansOutIncrement > 0)) {
             TrayEvent currentRecord = eventStore.get(key);
             int currentScansIn = currentRecord == null ? 0 : currentRecord.scannedIn();
             int currentScansOut = currentRecord == null ? 0 : currentRecord.scannedOut();
