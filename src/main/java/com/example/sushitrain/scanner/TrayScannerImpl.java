@@ -41,8 +41,6 @@ public class TrayScannerImpl implements TrayScanner {
             int traysOut = lineScanner.nextInt();
 
             if (scanDate != null) {
-                long millisSinceStart = scanDate.getTime() - beginningDate.getTime();
-
                 incrementEventStore(eventStore, scanDate, traysIn, traysOut);
                 if (traysIn > 0) {
                     totalIn += traysIn;
@@ -52,9 +50,12 @@ public class TrayScannerImpl implements TrayScanner {
                     totalOut += traysOut;
                 }
 
-                if (millisSinceStart >= (3 * 60 * MINUTE_MILLIS)) {
-                    int scanOutAdjustment;
-                    scanOutAdjustment = adjustForMissingScansOut(eventStore, scanDate);
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(scanDate);
+                boolean doErrorCorrections = cal.get(Calendar.HOUR_OF_DAY) >= 3;
+
+                if (doErrorCorrections) {
+                    int scanOutAdjustment = adjustForMissingScansOut(eventStore, scanDate);
                     if (scanOutAdjustment > 0) {
                         totalOut += scanOutAdjustment;
                     }
@@ -62,7 +63,7 @@ public class TrayScannerImpl implements TrayScanner {
 
                 net = totalIn - totalOut;
 
-                if (net < 0) {
+                if (doErrorCorrections && net < 0) {
                     Date entryTime = new Date(scanDate.getTime() - 90 * MINUTE_MILLIS);
                     incrementEventStore(eventStore, entryTime, -net, 0);
                     totalIn += -net;
