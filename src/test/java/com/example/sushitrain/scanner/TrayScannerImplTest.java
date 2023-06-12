@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -71,23 +72,33 @@ class TrayScannerImplTest {
     void adjustForMissingScansOutTest() throws ParseException {
 
         TrayScannerImpl scanner = new TrayScannerImpl();
-        Map<Date, TrayEvent> eventStore = new HashMap<>();
+        Map<Date, TrayEvent> eventStore = new TreeMap<>();
         insertEntry(eventStore, "05:45", 1, 0);
         insertEntry(eventStore, "06:30", 1, 0);
         insertEntry(eventStore, "06:45", 3, 0);
 
         insertEntry(eventStore, "09:45", 4, 2);
 
-        Date startTime = hourDateFormat.parse("06:45");
-        Date endTime = hourDateFormat.parse("09:45");
+        Date startTime = parseDate("06:45");
+        Date endTime = parseDate("09:45");
         assertEquals(3, scanner.adjustForMissingScansOut(eventStore, startTime, endTime));
 
         assertEquals(0, scanner.adjustForMissingScansOut(eventStore, startTime, endTime));
+
+        insertEntry(eventStore, "13:30", 1, 0);
+        insertEntry(eventStore, "15:00", 1, 0);
+        insertEntry(eventStore, "16:30", 4, 2);
+        assertEquals(4, scanner.adjustForMissingScansOut(eventStore, parseDate("16:30")));
+    }
+
+    private Date parseDate(String s) throws ParseException {
+        return hourDateFormat.parse(s);
     }
 
     private void insertEntry(Map<Date, TrayEvent> eventStore, String scanTime, int scansIn, int scansOut) throws ParseException {
-        Date key = hourDateFormat.parse(scanTime);
+        Date key = parseDate(scanTime);
         eventStore.put(key, new TrayEvent(key, scansIn, scansOut));
     }
+
 
 }

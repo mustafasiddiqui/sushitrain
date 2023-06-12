@@ -41,10 +41,6 @@ public class TrayScannerImpl implements TrayScanner {
             int traysOut = lineScanner.nextInt();
 
             if (scanDate != null) {
-                Calendar cal = Calendar.getInstance();
-                cal.setTime(scanDate);
-                cal.add(Calendar.MINUTE, -180);
-
                 long millisSinceStart = scanDate.getTime() - beginningDate.getTime();
 
                 incrementEventStore(eventStore, scanDate, traysIn, traysOut);
@@ -58,7 +54,7 @@ public class TrayScannerImpl implements TrayScanner {
 
                 if (millisSinceStart >= (3 * 60 * MINUTE_MILLIS)) {
                     int scanOutAdjustment;
-                    scanOutAdjustment = adjustForMissingScansOut(eventStore, cal.getTime(), scanDate);
+                    scanOutAdjustment = adjustForMissingScansOut(eventStore, scanDate);
                     if (scanOutAdjustment > 0) {
                         totalOut += scanOutAdjustment;
                     }
@@ -78,6 +74,17 @@ public class TrayScannerImpl implements TrayScanner {
         return net;
     }
 
+
+    int adjustForMissingScansOut(Map<Date, TrayEvent> eventStore, Date endTime) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(endTime);
+        if (cal.get(Calendar.HOUR_OF_DAY) >= 16) {
+            cal.add(Calendar.MINUTE, -90);
+        } else {
+            cal.add(Calendar.MINUTE, -180);
+        }
+        return adjustForMissingScansOut(eventStore, cal.getTime(), endTime);
+    }
 
     int adjustForMissingScansOut(Map<Date, TrayEvent> eventStore, Date startTime, Date endTime) {
         AtomicInteger scansIn = new AtomicInteger(),
