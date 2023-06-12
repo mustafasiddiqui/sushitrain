@@ -16,7 +16,7 @@ public class TrayScannerImpl implements TrayScanner {
 
     @Override
     public int scanTrays(File input) throws FileNotFoundException {
-        Map<Date, TrayEvent> eventStore = new TreeMap<>();
+        Map<Date, TrayEvent> eventStore = new HashMap<>();
         Scanner scanner = new Scanner(input);
         int net, totalIn = 0, totalOut = 0;
         Date beginningDate = null;
