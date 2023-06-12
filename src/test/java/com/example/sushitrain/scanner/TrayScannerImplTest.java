@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class TrayScannerImplTest {
 
     String testPath = "src/test/resources";
-    DateFormat hourDateFormat = new SimpleDateFormat("HH:mm");
+    DateFormat hourMinuteFormat = new SimpleDateFormat("HH:mm");
 
 
     @Test
@@ -88,15 +88,24 @@ class TrayScannerImplTest {
         insertEntry(eventStore, "13:30", 1, 0);
         insertEntry(eventStore, "15:00", 1, 0);
         insertEntry(eventStore, "16:30", 4, 2);
+        printEventStore(eventStore);
+
         assertEquals(4, scanner.adjustForMissingScansOut(eventStore, parseDate("16:30")));
     }
 
     private Date parseDate(String s) throws ParseException {
-        return hourDateFormat.parse(s);
+        return hourMinuteFormat.parse(s);
+    }
+
+    private void printEventStore(Map<Date, TrayEvent> eventStore) {
+        for (Map.Entry<Date, TrayEvent> entry : eventStore.entrySet()) {
+            TrayEvent event = entry.getValue();
+            System.out.printf("%s\t%d\t%d\n", hourMinuteFormat.format(entry.getKey()), event.scannedIn(), event.scannedOut());
+        }
     }
 
     private void insertEntry(Map<Date, TrayEvent> eventStore, String scanTime, int scansIn, int scansOut) throws ParseException {
-        Date key = parseDate(scanTime);
+        Date key = hourMinuteFormat.parse(scanTime);
         eventStore.put(key, new TrayEvent(key, scansIn, scansOut));
     }
 
