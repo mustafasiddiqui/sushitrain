@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -29,13 +31,13 @@ class TrayScannerImplTest {
 
     @Test
     void morningRunWithMissedScans() throws IOException {
-        File file = new File(testPath, "count_dataset_370.csv");
         TrayScannerImpl scanner = new TrayScannerImpl();
-        assertEquals(32, scanner.scanTrays(file));
+        Path path = Paths.get(testPath, "count_dataset_370.csv");
+        assertEquals(32, scanner.scanTrays(path.toString()));
     }
 
     @Test
-    void allDayRun() throws IOException {
+    void earlyMorningRun() throws IOException {
         File file = new File(testPath, "count_dataset_482.csv");
         TrayScannerImpl scanner = new TrayScannerImpl();
         assertEquals(2, scanner.scanTrays(file));

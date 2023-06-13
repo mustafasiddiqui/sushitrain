@@ -2,6 +2,8 @@ package com.example.sushitrain.scanner;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -15,7 +17,12 @@ public class TrayScannerImpl implements TrayScanner {
     private static final long MINUTE_MILLIS = 60 * 1000;
 
     @Override
-    public int scanTrays(File input) throws FileNotFoundException {
+    public int scanTrays(String pathString) throws FileNotFoundException {
+        Path path = Paths.get(pathString);
+        return scanTrays(path.toFile());
+    }
+
+    int scanTrays(File input) throws FileNotFoundException {
         Map<Date, TrayEvent> eventStore = new HashMap<>();
         Scanner scanner = new Scanner(input);
         int net, totalIn = 0, totalOut = 0;
