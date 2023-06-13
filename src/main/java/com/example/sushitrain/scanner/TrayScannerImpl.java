@@ -27,55 +27,59 @@ public class TrayScannerImpl implements TrayScanner {
         Scanner scanner = new Scanner(input);
         int net, totalIn = 0, totalOut = 0;
         Date beginningDate = null;
-        while (scanner.hasNextLine()) {
-            String line = scanner.nextLine();
-            Scanner lineScanner = new Scanner(line).useDelimiter(",");
-            String day = lineScanner.next();
-            String time = lineScanner.next();
-            Date scanDate;
+        try {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                Scanner lineScanner = new Scanner(line).useDelimiter(",");
+                String day = lineScanner.next();
+                String time = lineScanner.next();
+                Date scanDate;
 
-            try {
-                scanDate = dateFormat.parse(day + " " + time);
-                if (beginningDate == null) {
-                    beginningDate = scanDate;
-                }
-            } catch (ParseException e) {
-                e.printStackTrace();
-                throw new RuntimeException(e);
-            }
-
-            int traysIn = lineScanner.nextInt();
-            int traysOut = lineScanner.nextInt();
-
-            if (scanDate != null) {
-                incrementEventStore(eventStore, scanDate, traysIn, traysOut);
-                if (traysIn > 0) {
-                    totalIn += traysIn;
+                try {
+                    scanDate = dateFormat.parse(day + " " + time);
+                    if (beginningDate == null) {
+                        beginningDate = scanDate;
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 }
 
-                if (traysOut > 0) {
-                    totalOut += traysOut;
-                }
+                int traysIn = lineScanner.nextInt();
+                int traysOut = lineScanner.nextInt();
 
-                Calendar cal = Calendar.getInstance();
-                cal.setTime(scanDate);
-                boolean doErrorCorrections = cal.get(Calendar.HOUR_OF_DAY) >= 3;
+                if (scanDate != null) {
+                    incrementEventStore(eventStore, scanDate, traysIn, traysOut);
+                    if (traysIn > 0) {
+                        totalIn += traysIn;
+                    }
 
-                if (doErrorCorrections) {
-                    int scanOutAdjustment = adjustForMissingScansOut(eventStore, scanDate);
-                    if (scanOutAdjustment > 0) {
-                        totalOut += scanOutAdjustment;
+                    if (traysOut > 0) {
+                        totalOut += traysOut;
+                    }
+
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTime(scanDate);
+                    boolean doErrorCorrections = cal.get(Calendar.HOUR_OF_DAY) >= 3;
+
+                    if (doErrorCorrections) {
+                        int scanOutAdjustment = adjustForMissingScansOut(eventStore, scanDate);
+                        if (scanOutAdjustment > 0) {
+                            totalOut += scanOutAdjustment;
+                        }
+                    }
+
+                    net = totalIn - totalOut;
+
+                    if (doErrorCorrections && net < 0) {
+                        Date entryTime = new Date(scanDate.getTime() - 90 * MINUTE_MILLIS);
+                        incrementEventStore(eventStore, entryTime, -net, 0);
+                        totalIn += -net;
                     }
                 }
-
-                net = totalIn - totalOut;
-
-                if (doErrorCorrections && net < 0) {
-                    Date entryTime = new Date(scanDate.getTime() - 90 * MINUTE_MILLIS);
-                    incrementEventStore(eventStore, entryTime, -net, 0);
-                    totalIn += -net;
-                }
             }
+        } finally {
+            scanner.close();
         }
 
         net = totalIn - totalOut;
