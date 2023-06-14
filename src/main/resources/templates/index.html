@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head lang="en">
+    <meta charset="UTF-8"/>
+</head>
+<body>
+
+<div th:if="${successfulUpload}">
+    <table>
+        <tr>
+            <td>Result</td>
+        </tr>
+        <tr>
+            <td th:text="${result}"/>
+        </tr>
+        <tr>
+            <td><a href="/uploadFile">Try Again</a></td>
+        </tr>
+    </table>
+</div>
+
+</body>
+</html>
