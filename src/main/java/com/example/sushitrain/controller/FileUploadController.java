@@ -1,6 +1,8 @@
 package com.example.sushitrain.controller;
 
+import com.example.sushitrain.scanner.TrayScanner;
 import com.example.sushitrain.scanner.TrayScannerImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,6 +23,9 @@ import java.nio.file.Paths;
 @Controller
 public class FileUploadController {
 
+    @Autowired
+    TrayScanner trayScanner;
+
     @GetMapping("/")
     public String index() {
         return "index";
@@ -35,8 +40,7 @@ public class FileUploadController {
     public String handleFileUpload(@RequestParam MultipartFile file, RedirectAttributes redirectAttributes) {
         try {
             String uploadedFilePath = convertMultipartFileToFile(file);
-            TrayScannerImpl scanner = new TrayScannerImpl();
-            int retVal = scanner.scanTrays(uploadedFilePath);
+            int retVal = trayScanner.scanTrays(uploadedFilePath);
             deleteFile(uploadedFilePath);
             redirectAttributes
                     .addFlashAttribute("result", retVal)
