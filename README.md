@@ -5,6 +5,12 @@ With this application, a sushi restaurant can upload a file containing scans in/
 Main features of the application:
 - Upload a file through the browser or curl/Postman and view results from the scan processing
 
+![upload.png](upload.png)
+
+![result.png](result.png)
+
+Sample file can be found [here](src/test/resources/count_dataset_370.csv)
+
 # Technology Stack
 The application is a Web Application, written in Spring Boot with MVC pattern.
 For page rendering, thymeleaf is used.
@@ -24,9 +30,9 @@ In order to create the executable, run
 >mvn package
 ```
 
-In order to run the application, run
+In order to run the application, run this command from the 
 ```bash
->java -jar sushitrain-X.X.X.jar
+>java -jar target/sushitrain-X.X.X.jar
 ```
 Application will be reachable at `http://localhost:8080`.
 
